@@ -14,6 +14,9 @@ import InputBase from "@mui/material/InputBase";
 import IconButton from "@mui/material/IconButton";
 import SearchIcon from "@mui/icons-material/Search";
 import CircularProgress from "@mui/material/CircularProgress";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
 // icons
 import { SiEthereum } from "react-icons/si";
 import { BsCoin } from "react-icons/bs";
@@ -36,6 +39,7 @@ const style = {
   wrapperCard: `flex flex-col items-center justify-start flex-1 gap-1 sm:gap-4`,
   listContainer: `w-screen px-4`,
   midRow: `w-full flex justify-center text-white`,
+  midRowForm: `w-full flex justify-center text-white`,
   title: `text-5xl font-bold mb-4 `,
   statsContainer: `w-full sm:w-[44vw] flex justify-between py-4 border border-[#ffffff] rounded-xl mb-4 px-6`,
   collectionStat: `w-1/4`,
@@ -53,10 +57,35 @@ export default function Home() {
   const [library, setLibrary] = useState();
   const [account, setAccount] = useState();
   const [balance, setBalance] = useState();
+  const [ensAddressBalance, setEnsAddressBalance] = useState();
   const [assets, setAssets] = useState([]);
   const [owner, setOwner] = useState([]);
   const [search, setSearch] = useState("");
   const [isLoading, setLoading] = useState(true);
+  const [filter, setFilter] = useState("all");
+
+  const handleChange = (event) => {
+    const value = event.target.value;
+    setFilter(value);
+    let params = {};
+    if (value === "address") {
+      params = {
+        owner: account,
+        order_direction: "desc",
+        offset: 0,
+        limit: 50,
+        include_orders: true,
+      };
+    } else {
+      params = {
+        order_direction: "desc",
+        offset: 0,
+        limit: 50,
+        include_orders: true,
+      };
+    }
+    handleFetchAssets(params);
+  };
 
   const web3Modal = useRef(null);
 
@@ -103,6 +132,19 @@ export default function Home() {
       setProvider(provider);
       setBalance(formattedBalance);
       setLibrary(library);
+
+      const ensAddress = library?.network?.ensAddress;
+      const ensAddressBalance = await library.getBalance(ensAddress);
+      const ensAddressBalanceEtherFormatted = ethers.utils.formatEther(
+        ensAddressBalance?._hex
+      );
+
+      const ensAddressBalanceFormatted = Number(
+        ensAddressBalanceEtherFormatted
+      ).toFixed(4);
+      console.log("ensAddressBalanceFormatted", ensAddressBalanceFormatted);
+      setEnsAddressBalance(ensAddressBalanceFormatted);
+
       if (accounts[0]) {
         setAccount(accounts[0]);
         welcomeUser(truncateAddress(accounts[0]));
@@ -123,6 +165,7 @@ export default function Home() {
     setLibrary("");
     setAssets("");
     setOwner("");
+    setEnsAddressBalance("");
   };
 
   const disconnect = async () => {
@@ -139,10 +182,9 @@ export default function Home() {
   useEffect(() => {
     if (account) {
       const param = {
-        owner: account,
         order_direction: "desc",
         offset: 0,
-        limit: 20,
+        limit: 50,
         include_orders: true,
       };
       handleFetchAssets(param);
@@ -170,7 +212,16 @@ export default function Home() {
     return assets.filter((asset) => {
       return (
         asset.name?.toLowerCase().includes(search.toLowerCase()) ||
-        asset.creator?.toLowerCase().includes(search.toLowerCase())
+        asset.asset_contract?.address
+          ?.toLowerCase()
+          .includes(search.toLowerCase()) ||
+        asset.creator?.user?.username
+          ?.toLowerCase()
+          .includes(search.toLowerCase()) ||
+        asset.asset_contract?.seller_fee_basis_points
+          ?.toString()
+          ?.toLowerCase()
+          .includes(search.toLowerCase())
       );
     });
   }, [search, assets]);
@@ -228,8 +279,8 @@ export default function Home() {
               title="USD Coin"
               icon={<BsCoin fontSize={21} className="text-white" />}
               subtitle={`${
-                balance
-                  ? `Your Ethereum balance is: ${balance}`
+                ensAddressBalance
+                  ? `Your USD Coin balance is: ${ensAddressBalance}`
                   : `Connect your wallet to see your USD Coin balance`
               } `}
             />
@@ -260,24 +311,44 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <div className={style.midRow}>
+            <div className={style.midRowForm}>
+              <FormControl
+                sx={{ m: 1, minWidth: 120 }}
+                size="small"
+                className="h-8"
+              >
+                <Select
+                  labelId="demo-select-small"
+                  id="demo-select-small"
+                  value={filter}
+                  displayEmpty
+                  onChange={handleChange}
+                  className="bg-white h-12 p-1 -mt-2 border-0"
+                >
+                  <MenuItem value="all">All</MenuItem>
+                  <MenuItem value="address">Your wallet address</MenuItem>
+                </Select>
+              </FormControl>
               <Paper
                 component="form"
                 sx={{
                   p: "2px 4px",
                   display: "flex",
                   alignItems: "center",
-                  width: 400,
+                  width: 500,
                 }}
               >
-                <IconButton sx={{ p: "10px" }} aria-label="search">
+                <IconButton sx={{ p: "5px" }} aria-label="search">
                   <SearchIcon />
                 </IconButton>
                 <InputBase
                   sx={{ ml: 1, flex: 1 }}
-                  placeholder="Search and discover your NFT's"
-                  inputProps={{ "aria-label": "search google maps" }}
+                  placeholder="Search and discover NFT's"
+                  inputProps={{
+                    "aria-label": "Search and discover NFT's",
+                  }}
                   onChange={(e) => setSearch(e.target.value)}
+                  className="text-xs sm:text-lg"
                 />
               </Paper>
             </div>

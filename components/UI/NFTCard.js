@@ -2,16 +2,18 @@ import { memo } from "react";
 import { BiHeart } from "react-icons/bi";
 import Image from "next/image";
 
+import placeHolderImage from "assets/images/placeholder-image.png";
+
 const style = {
   wrapper: `bg-[#303339] w-[16rem] h-[22rem] my-10 mx-5 rounded-2xl overflow-hidden cursor-pointer`,
-  imgContainer: `h-2/3 w-full overflow-hidden flex justify-center items-center relative`,
+  imgContainer: `h-3/5 w-full overflow-hidden flex justify-center items-center relative`,
   nftImg: `w-full object-cover`,
   details: `p-3`,
   info: `flex justify-between text-[#e4e8eb] drop-shadow-xl`,
-  infoLeft: `flex-0.6 flex-wrap`,
+  infoLeft: `flex-0.6 flex-wrap truncate`,
   collectionName: `font-semibold text-sm text-[#8a939b]`,
-  assetName: `font-bold text-lg mt-2`,
-  assetDescr: `font-bold text-lg mt-2 truncate`,
+  assetName: `truncate font-bold text-base mt-2`,
+  assetDescr: `font-bold text-base mt-2 text-ellipsis overflow-hidden truncate`,
   infoRight: `flex-0.4 text-right`,
   priceTag: `font-semibold text-sm text-[#8a939b]`,
   priceValue: `flex items-center text-xl font-bold mt-2`,
@@ -26,9 +28,11 @@ const NFTCard = ({ nftItem, title }) => {
       <a target="_blank" href={nftItem.permalink} rel="noopener noreferrer">
         <div className={style.imgContainer}>
           <Image
-            src={`${nftItem.image_preview_url}`}
+            src={nftItem.image_preview_url ?? placeHolderImage}
             alt={nftItem.name}
             className={style.nftImg}
+            blurDataURL
+            placeholder="blur"
             layout="fill"
           />
         </div>
@@ -36,10 +40,8 @@ const NFTCard = ({ nftItem, title }) => {
           <div className={style.info}>
             <div className={style.infoLeft}>
               <div className={style.collectionName}>{title}</div>
-              <div className={style.assetName}>{nftItem.name}</div>
-              <div className={style.assetDescr}>
-                {nftItem.description ?? ""}
-              </div>
+              <p className={style.assetName}>{nftItem.name}</p>
+              <p className={style.assetDescr}>{nftItem.description ?? ""}</p>
             </div>
           </div>
           <div className={style.likes}>
