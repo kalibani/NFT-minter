@@ -1,14 +1,14 @@
-# [OpenSea Clone](https://open-sea-blockchain.vercel.app/) - Web 3.0 Blockchain Application
+# [Web3Modal & Opensea API](https://open-sea-blockchain.vercel.app/) - Web 3.0 Application
 
-![Image1](https://github.com/kalibani/NFT-minter/blob/main/assets/ScreenShot1.png)
+![Image1](https://github.com/kalibani/NFT-minter/blob/main/assets/images/Image1.png)
 
-![Image2](https://github.com/kalibani/NFT-minter/blob/main/assets/ScreenShot2.png)
+![Image2](https://github.com/kalibani/NFT-minter/blob/main/assets/images/Image2.png)
 
-![Image2](https://github.com/kalibani/NFT-minter/blob/main/assets/ScreenShot2.png)
+![Image3](https://github.com/kalibani/NFT-minter/blob/main/assets/images/Image3.png)
 
 ## Introduction
 
-OpenSea - This is an NFT List Application built using Next JS, Tailwind css and Web 3.0 methodologies such as Web3Modal & OpenSea API
+Web3Modal Implementation - This is an NFT List Application built using Next JS, Tailwind css and Web 3.0 methodologies such as Web3Modal & OpenSea API
 
 ## Usage
 
