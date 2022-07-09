@@ -1,4 +1,4 @@
-# [Web3Modal & Opensea API](https://open-sea-blockchain.vercel.app/) - Web 3.0 Application
+# [Web3Modal & Opensea API](https://nft-minter-k8t8nap3n-kalibani.vercel.app/) - Web 3.0 Application
 
 ![Image1](https://github.com/kalibani/NFT-minter/blob/main/assets/images/Image1.png)
 
