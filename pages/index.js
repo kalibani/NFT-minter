@@ -51,10 +51,10 @@ const style = {
   wrapperIconEmpty: `flex justify-center h-9 items-center mb-4`,
   emptyText: `text-text-base sm:text-3xl`,
 };
-
 export default function Home() {
   const [provider, setProvider] = useState();
   const [library, setLibrary] = useState();
+  const [network, setNetwork] = useState();
   const [account, setAccount] = useState();
   const [balance, setBalance] = useState();
   const [ensAddressBalance, setEnsAddressBalance] = useState();
@@ -125,6 +125,7 @@ export default function Home() {
     try {
       const provider = await web3Modal.current.connect();
       const library = new ethers.providers.Web3Provider(provider);
+      const network = await library.getNetwork();
       const accounts = await library.listAccounts();
       const { _hex } = await library.getBalance(accounts[0]);
       const balance = ethers.utils.formatEther(_hex);
@@ -132,6 +133,7 @@ export default function Home() {
       setProvider(provider);
       setBalance(formattedBalance);
       setLibrary(library);
+      setNetwork(network?.name);
 
       const ensAddress = library?.network?.ensAddress;
       const ensAddressBalance = await library.getBalance(ensAddress);
@@ -304,10 +306,8 @@ export default function Home() {
                   <div className={style.statName}>owners</div>
                 </div>
                 <div className={style.collectionStat}>
-                  <div className={style.statValue}>
-                    {library?.connection.url}
-                  </div>
-                  <div className={style.statName}>Connection</div>
+                  <div className={style.statValue}>{network}</div>
+                  <div className={style.statName}>Blockchain</div>
                 </div>
               </div>
             </div>
@@ -323,7 +323,7 @@ export default function Home() {
                   value={filter}
                   displayEmpty
                   onChange={handleChange}
-                  className="bg-white h-12 p-1 -mt-2 border-0"
+                  className="h-12 p-1 -mt-2 bg-white border-0"
                 >
                   <MenuItem value="all">All</MenuItem>
                   <MenuItem value="address">Your wallet address</MenuItem>
